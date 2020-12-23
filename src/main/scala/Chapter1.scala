@@ -1,5 +1,4 @@
 object Chapter1 extends App {
-  println(findPermutation("abc"))
   import scala.util.control.Breaks._
 
   /**
@@ -49,60 +48,76 @@ object Chapter1 extends App {
   }
 
   /**
-  * URLify: Write a method to replace all spaces in a string with '%20'.
-  * You may assume that the string has sufficient space at the end to hold
-  * the additional characters,and that you are given the "true" length of the string.
-  * (Note: If implementing in Java,please use a character array so that
-  * you can perform this operation in place.)
-  */
+    * URLify: Write a method to replace all spaces in a string with '%20'.
+    * You may assume that the string has sufficient space at the end to hold
+    * the additional characters,and that you are given the "true" length of the string.
+    * (Note: If implementing in Java,please use a character array so that
+    * you can perform this operation in place.)
+    */
   def urlify(s: String, trueLength: Int): String = {
     val myArray = s.toArray.map(_.toString)
     var count = 0
     for (c <- myArray) {
       if (c.toString == " " &&
-        (count > 0 && count < trueLength && myArray(count - 1) != "%20")) {
-        myArray(count)= "%20"
+          (count > 0 && count < trueLength && myArray(count - 1) != "%20")) {
+        myArray(count) = "%20"
       }
 
-      count+=1
+      count += 1
     }
     myArray.mkString
   }
 
-
-  def findPermutation(s: String): Seq[String] = {
-    var list: List[String] = Nil
-    var count = -1
-
-    def loop(prefix: String): String = {
-      count += 1
-      if (count == s.length - 1) {
-        prefix
-      } else {
-        val remaining = s.substring(0, count) + s.substring(count + 1)
-        list = list ++ List(prefix + remaining)
-        loop(prefix + s.charAt(count))
+  /**
+    * Find the permutation of string
+    * println(findPermutation("abc"))
+    * // List(abc, acb, bac, bca, cab, cba)
+    */
+  def findPermutations(originalString: String): List[String] = {
+    def findPermutation(loopString: String,
+                        prefix: String,
+                        list: List[String]): List[String] = {
+      if (prefix.length == originalString.length)
+        prefix :: list
+      else {
+        for {
+          index <- (0 until loopString.length()).toList
+          rem = loopString.substring(0, index) + loopString.substring(index + 1)
+          pre = prefix + loopString.charAt(index)
+          res <- findPermutation(rem, pre, list)
+        } yield res
       }
-
     }
 
-    loop("")
-
-    list
+    findPermutation(originalString, "", Nil)
   }
 
+  /**
+    * Palindrome Permutation: Given a string, write a function to check if it is a permutation of a palin­ drome. A palindrome is a word or phrase
+    * that is the same forwards and backwards. A permutation is a rearrangement of letters. The palindrome does not need to be limited to just
+    * dictionary words.
+    * EXAMPLE
+    * Input: Tact Coa
+    * Output: True (permutations: "taco cat", "atco eta", etc.)
+    */
+  def palindromePermutation(string: String) = {
+    val listOfPermutations = findPermutations(string)
+    var result: List[String] = Nil
 
+    for (eachPermutation <- listOfPermutations) {
+      val lowered = eachPermutation.toLowerCase
+      var reversed: List[Char] = List()
+      for (eachChar <- lowered) {
+        if (eachChar.toString != " ") {
+          reversed = eachChar :: reversed
+        }
+      }
 
-  // abcd
-  // a bc
-  // a cb
-  // ab c
-  // ac
-  // b ac
-  // b ca
-  // ba c
-  // bc a
-  //
+      if (reversed.mkString == lowered.filterNot(_.toString == " ")) {
+        result = eachPermutation :: result
+      }
+    }
 
-
+    result
+  }
 }
