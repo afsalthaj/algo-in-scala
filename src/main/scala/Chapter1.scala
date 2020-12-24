@@ -3,11 +3,6 @@ import scala.annotation.tailrec
 object Chapter1 extends App {
   import scala.util.control.Breaks._
 
-  println(oneWay("pale", "ple"))
-  println(oneWay("pales", "pale"))
-  println(oneWay("pale", "bale"))
-  println(oneWay("pale", "bake"))
-
   /**
     * Is Unique: Implement an algorithm to determine if a string has all unique characters. What if you cannot use additional data structures?
     */
@@ -160,6 +155,43 @@ object Chapter1 extends App {
     }
 
     loop(s1.toCharArray, s2.toCharArray, 0)
+  }
+
+  /**
+    * String Compression: Implement a method to perform basic string compression
+    * using the counts of repeated characters. For example, the string
+    * aabcccccaaa would become a2blc5a3. If the "compressed" string would
+    * not become smaller than the original string, your method should return
+    * the original string. You can assume the string has only uppercase and lowercase letters (a - z).
+    */
+  def compressString(string: String): String = {
+    @scala.annotation.tailrec
+    def loop(string: Array[Char],
+             previousChar: Option[Char],
+             count: Int,
+             stringBuilder: StringBuilder): StringBuilder = {
+      string.headOption match {
+        case a @ Some(value) if a == previousChar =>
+          loop(string.tail, Some(value), count + 1, stringBuilder)
+        case Some(value) if previousChar.isEmpty =>
+          loop(string.tail, Some(value), 1, stringBuilder)
+        case a @ Some(value) if a != previousChar =>
+          loop(
+            string.tail,
+            Some(value),
+            1,
+            previousChar
+              .map(c => stringBuilder.append(c.toString + count))
+              .getOrElse(stringBuilder)
+          )
+        case None =>
+          previousChar
+            .map(c => stringBuilder.append(c.toString + count))
+            .getOrElse(stringBuilder)
+      }
+    }
+
+    loop(string.toCharArray, None, 0, new StringBuilder).toString
   }
 
 }
