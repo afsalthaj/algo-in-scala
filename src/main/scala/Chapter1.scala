@@ -1,5 +1,12 @@
+import scala.annotation.tailrec
+
 object Chapter1 extends App {
   import scala.util.control.Breaks._
+
+  println(oneWay("pale", "ple"))
+  println(oneWay("pales", "pale"))
+  println(oneWay("pale", "bale"))
+  println(oneWay("pale", "bake"))
 
   /**
     * Is Unique: Implement an algorithm to determine if a string has all unique characters. What if you cannot use additional data structures?
@@ -120,4 +127,39 @@ object Chapter1 extends App {
 
     result
   }
+
+  /**
+    * One Away: There are three types of edits that can be performed on strings: insert a character, remove a character, or replace a character.
+    * Given two strings, write a function to check if they are one edit (or zero edits) away.
+    * EXAMPLE
+    * pale, ple -> true pales, pale -> true pale, bale -> true pale, bake -> false
+    */
+  def oneWay(s1: String, s2: String): Int = {
+    @tailrec
+    def loop(s1: Array[Char], s2: Array[Char], edits: Int): Int = {
+      (s1.headOption, s2.headOption) match {
+        case (Some(a), Some(b)) if a == b =>
+          loop(s1.tail, s2.tail, edits)
+
+        case (Some(a), Some(b)) if a != b =>
+          if (s1.length > s2.length)
+            loop(s1.tail, s2, edits + 1)
+          else if (s2.length > s1.length)
+            loop(s1, s2.tail, edits + 1)
+          else
+            loop(s1.tail, s2.tail, edits + 1)
+
+        case (Some(_), None) =>
+          loop(s1.tail, s2, edits + 1)
+
+        case (None, Some(_)) =>
+          loop(s1, s2.tail, edits + 1)
+
+        case (None, None) => edits
+      }
+    }
+
+    loop(s1.toCharArray, s2.toCharArray, 0)
+  }
+
 }
