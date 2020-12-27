@@ -2,7 +2,7 @@ import scala.annotation.tailrec
 
 object Chapter1 extends App {
   import scala.util.control.Breaks._
-
+  
   /**
     * Is Unique: Implement an algorithm to determine if a string has all unique characters. What if you cannot use additional data structures?
     */
@@ -192,6 +192,53 @@ object Chapter1 extends App {
     }
 
     loop(string.toCharArray, None, 0, new StringBuilder).toString
+  }
+
+  /**
+    * Rotate Matrix: Given an image represented by an NxN matrix, where each pixel in
+    * the image is 4 bytes, write a method to rotate the image by 90
+    * degrees. Can you do this in place?
+    * Hints:#51, #100
+
+    * Input:
+    *
+    * 1 2 3 4
+    * 5 6 7 8
+    * A B C D
+    * E F G H
+    *
+    * Output:
+    *
+    * E A 5 1
+    * F B 6 2
+    * G C 7 3
+    * H D 8 4
+    */
+  def rotateImage(input: Array[Array[Any]]): Array[Array[Any]] = {
+    val size = input.length
+    val outerIndex = size - 1
+
+    for (layer <- 0 until size) {
+      @scala.annotation.tailrec
+      def loop(i: Int, j: Int): Array[Array[Any]] = {
+        if (i < (outerIndex - layer) && j >= 0) {
+          input
+        } else {
+          val temp = input(layer)(i)
+          input(layer)(i) = input(j)(layer)
+          input(j)(layer) = input(outerIndex - layer)(j)
+          input(outerIndex - layer)(j) = input(i)(outerIndex - layer)
+
+          input(i)(outerIndex - layer) = temp
+
+          loop(i + 1, j + 1)
+        }
+      }
+
+      loop(layer, outerIndex - layer)
+    }
+
+    input
   }
 
 }
