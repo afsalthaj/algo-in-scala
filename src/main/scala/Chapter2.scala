@@ -1,7 +1,8 @@
 object Chapter2 {
 
   /**
-   * A functionally looking list singly linked list implementation, yet mutable.
+   * A (mutable) singly linked list implementation,
+   * with all the niceness of Scala.
    */
   sealed trait LinkedList[A] { self =>
 
