@@ -3,6 +3,8 @@ object Chapter2 {
   /**
    * A (mutable) singly linked list implementation,
    * with all the niceness of Scala.
+   * The whole idea is revolving around pattern matching
+   * and recursion to solve "almost" all algorithms.
    */
   sealed trait LinkedList[A] { self =>
 
@@ -26,6 +28,12 @@ object Chapter2 {
      * Implement an algorithm to delete a node in the middle (i.e, any node but
      * the first and last node, not necessarily the exact middle) of a singly
      * linked list, given only access to the node.
+     *
+     * Essentially the solution, is jumping through all the nodes, and replace
+     * the tail once it hits the middle node. Complexity is O(n).
+     *
+     * Note that, jumping through the node and replacing the tail results
+     * in the original list (self) to be mutated
      */
     def deleteMiddleNode() =
       if (self.size > 2) {
@@ -202,11 +210,42 @@ object Chapter2 {
       case Nil()                      => list
     }
 
+  /**
+   * 2.4 Write code to partition a linked list around a value x,
+   * such that all nodes less than x come before all nodes greater
+   * than or equal to x. If x is contained withint the list, the values
+   * of x only need to be after the elements less than x. The partition
+   * element x can can appear anywhere in the "right partition",
+   * and it doesn't need to appear between the left and right partition.
+   */
+  def partition(list: LinkedList[Int], number: Int) = {
+    def go(left: LinkedList[Int], right: LinkedList[Int]): LinkedList[Int] =
+      left match {
+        case a @ Cons(head, tail) =>
+          if (tail == Nil()) {
+            a.tail = right
+            list
+          } else {
+            if (a.head >= number) {
+              val newList = a.moveLeft
+              go(newList, right.prepend(head))
+            } else {
+              go(tail, right)
+            }
+          }
+        case Nil()                =>
+          list
+      }
+
+    go(list, Nil())
+  }
 }
 
 object RunChapter2 extends App {
   import Chapter2._
 
+  println(partition(Cons(3, Cons(5, Cons(8, Cons(5, Cons(10, Cons(2, Cons(1, Nil()))))))), 5))
+  println(partition(Cons(5, Cons(4, Cons(6, Cons(1, Cons(2, Cons(3, Nil())))))), 3))
   println(Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Cons(6, Cons(7, Cons(8, Cons(9, Nil()))))))))).deleteMiddleNode())
   println(Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Cons(6, Nil())))))).sliderForeach((a, b, c) => println(a + b + c)))
   println(removeDupicates(Cons(1, Cons(2, Cons(1, Cons(2, Cons(1, Cons(3, Cons(4, Cons(3, Nil()))))))))))
