@@ -8,6 +8,35 @@ object Chapter2 {
    */
   sealed trait LinkedList[A] { self =>
 
+    def current = self match {
+      case Cons(head, tail) => Some(head)
+      case Nil()            => None
+    }
+
+    def next: Option[A] = self match {
+      case Cons(head, tail) => tail.headOption
+      case Nil()            => None
+    }
+
+    def nextTail: LinkedList[A] = self match {
+      case Cons(head, tail) =>
+        tail match {
+          case Cons(head, tail) => tail
+          case Nil()            => Nil()
+        }
+      case Nil()            => Nil()
+    }
+
+    def fold[B](f: A => B)(g: (B, B) => B)(identity: B): B =
+      (current, next) match {
+        case (Some(v1), Some(v2)) =>
+          val firstTwo = g(f(v1), f(v2))
+          g(firstTwo, nextTail.fold(f)(g)(identity))
+        case (Some(v1), None)     => g(f(v1), identity)
+        case (None, Some(v2))     => g(f(v2), identity)
+        case (None, None)         => identity
+      }
+
     /**
      * 2.2: Return Kth to Last. Implement an algorithm
      * to find the Kth to last element of a singly linked list.
@@ -89,7 +118,7 @@ object Chapter2 {
     /**
      * Prepend is a O(1) operation
      */
-    def prepend(a: A) =
+    def prepend(a: A): LinkedList[A] =
       Cons(a, self)
 
     /**
@@ -115,10 +144,11 @@ object Chapter2 {
      * We are accumulating, or generating a new list
      */
     def reverseInEfficient: LinkedList[A] = {
-      def go(rem: LinkedList[A], acc: LinkedList[A]): LinkedList[A] = acc match {
-        case Cons(head, tail) => go(tail, Cons(head, acc))
-        case Nil()            => acc
-      }
+      def go(rem: LinkedList[A], acc: LinkedList[A]): LinkedList[A] =
+        rem match {
+          case Cons(head, tail) => go(tail, Cons(head, acc))
+          case Nil()            => acc
+        }
 
       go(self, Nil())
     }
@@ -239,6 +269,30 @@ object Chapter2 {
 
     go(list, Nil())
   }
+
+  /**
+   * You have 2 numbers represented by a linked list, where each node
+   * contains a single digit. The digits are stored in reverse order, such
+   * that the 1's digit is at the head of the list. Write a function that adds the
+   * two numbers and returns the sum as a linked list.
+   */
+  def sumTwoNumbers(left: LinkedList[Int], right: LinkedList[Int]): LinkedList[Int] = {
+    println(left.reverseInEfficient)
+    println(right.reverseInEfficient)
+    val chars = ((left.reverseInEfficient.fold(_.toString)((a, b) => a + b)("")).toInt +
+      (right.reverseInEfficient.fold(_.toString)((a, b) => a + b)("")).toInt).toString().toArray
+
+    println(chars.toList.map { r =>
+      println("the input is " + r + " and the output is " + r.toInt)
+    })
+
+    var output: LinkedList[Int] = Nil()
+
+    for (char <- chars)
+      output = output.prepend(char - '0') // https://stackoverflow.com/questions/16241923/scala-char-to-int-conversion
+
+    output
+  }
 }
 
 object RunChapter2 extends App {
@@ -246,6 +300,7 @@ object RunChapter2 extends App {
 
   println(partition(Cons(3, Cons(5, Cons(8, Cons(5, Cons(10, Cons(2, Cons(1, Nil()))))))), 5))
   println(partition(Cons(5, Cons(4, Cons(6, Cons(1, Cons(2, Cons(3, Nil())))))), 3))
+  println(sumTwoNumbers(Cons(7, Cons(1, Cons(6, Nil()))), Cons(5, Cons(9, Cons(2, Nil())))))
   println(Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Cons(6, Cons(7, Cons(8, Cons(9, Nil()))))))))).deleteMiddleNode())
   println(Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Cons(6, Nil())))))).sliderForeach((a, b, c) => println(a + b + c)))
   println(removeDupicates(Cons(1, Cons(2, Cons(1, Cons(2, Cons(1, Cons(3, Cons(4, Cons(3, Nil()))))))))))
