@@ -277,19 +277,14 @@ object Chapter2 {
    * two numbers and returns the sum as a linked list.
    */
   def sumTwoNumbers(left: LinkedList[Int], right: LinkedList[Int]): LinkedList[Int] = {
-    println(left.reverseInEfficient)
-    println(right.reverseInEfficient)
     val chars = ((left.reverseInEfficient.fold(_.toString)((a, b) => a + b)("")).toInt +
       (right.reverseInEfficient.fold(_.toString)((a, b) => a + b)("")).toInt).toString().toArray
 
-    println(chars.toList.map { r =>
-      println("the input is " + r + " and the output is " + r.toInt)
-    })
-
     var output: LinkedList[Int] = Nil()
 
+    // https://stackoverflow.com/questions/16241923/scala-char-to-int-conversion
     for (char <- chars)
-      output = output.prepend(char - '0') // https://stackoverflow.com/questions/16241923/scala-char-to-int-conversion
+      output = output.prepend(char - '0')
 
     output
   }
