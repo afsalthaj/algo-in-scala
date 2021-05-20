@@ -31,10 +31,10 @@ sealed trait Queue[A] { self =>
     case EmptyQueue()                => None
   }
 
-  // Definition of middleElements is as follows
+  // Definition of middleElements is set of elements, as far as there is a lastElement after removing middleElements and head.
   // 1, 2, 3 ==> Middle is 2, and lastElement is 3
   // 1, 2, None => Middle is 1 (this is invalid, you can replace this case with throwing an exception)
-  // 1, Empty, None => No middle element (because there is only lastElement)
+  // 1, Empty, None => No middle element (because there is only 1 element and that should be lastElement)
   // 1, Empty, 3 ==> Middle element is actually 1 (and lastElement is 3)
   def middleElements: Queue[A] = self match {
     case a @ ConsQueue(head, m, last) =>
