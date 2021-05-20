@@ -1,6 +1,8 @@
+package chapter1
+
 import scala.annotation.tailrec
 
-object Chapter1 {
+object Intro {
   import scala.util.control.Breaks._
 
   /**
@@ -134,7 +136,7 @@ object Chapter1 {
         case (Some(a), Some(b)) if a == b =>
           loop(s1.tail, s2.tail, edits)
 
-        case (Some(a), Some(b)) if a != b =>
+        case (Some(a), Some(b)) =>
           if (s1.length > s2.length)
             loop(s1.tail, s2, edits + 1)
           else if (s2.length > s1.length)
@@ -232,9 +234,4 @@ object Chapter1 {
 
     input
   }
-
-}
-
-object RunChapter1 extends App {
-  // Try these algorithms here
 }
