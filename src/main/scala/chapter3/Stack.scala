@@ -7,7 +7,7 @@ package chapter3
  *
  * This implies Stack could be implemented in terms of Chapter2.LinkedList,
  * however, someone should be able to copy this Class file and paste it anywhere
- * and user, and hence it is intentionally made as independent
+ * and use, and hence it is intentionally made as independent
  * as possible.
  */
 sealed trait Stack[A] { self =>
