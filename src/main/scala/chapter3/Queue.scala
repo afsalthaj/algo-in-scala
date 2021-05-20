@@ -4,7 +4,7 @@ import chapter3.Queue.ConsQueue
 
 /**
  * An immutable queue, with constant in time dequeue and enqueue operation
- * performing LIFO.
+ * performing FIFO.
  *
  * The mutable queue implementation is
  * complicated (or hard to follow) in the text book, and is prone to errors.
