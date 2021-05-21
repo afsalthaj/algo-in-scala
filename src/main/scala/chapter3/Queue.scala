@@ -3,91 +3,44 @@ import chapter3.Queue.EmptyQueue
 import chapter3.Queue.ConsQueue
 
 /**
- * An immutable queue, with constant in time dequeue and enqueue operation
- * performing FIFO.
- *
- * The mutable queue implementation is
- * complicated (or hard to follow) in the text book, and is prone to errors.
- *
- * Here we prefer an immutable queue, and the trade off is a bit of
- * space complexity, however this is nominal, as the mutable implementations
- * does involve creation of a space called "QueueNode" everytime we push!
- *
- * The boxing ops are relatively higher.
- * Conceptually that would be as follows
- *
- * Given a queue: SpaceX = Head(Space(A)) -> Middle(Space(B) -> Space(C)) -> Last(Space(D))
- * Adding a new element K to SpaceX implies, we create a new SpaceY. ** implies reference.
- * SpaceY = NewHead(K) -> NewMiddle**(SpaceX.Head -> SpaceX.Middle) -> NewSpace**(SpaceX.Last))
- * Adding another new element L
- * NewHead(L) -> NewMiddle**(SpaceY.Head ->SpaceY.Middle) -> NewSpace**(SpaceY.Last))
- *
- * Apparently this implies, the box operations are fairly minimal, and you should be good to go
- * with most of the algorithms.
+ * A stack unsafe queue, however constant in time
+ * enqueue and dequeue.
  */
 sealed trait Queue[A] { self =>
-  val lastElement = self match {
-    case ConsQueue(head, tail, last) => if (tail.isEmpty && last.isEmpty) Some(head) else last
-    case EmptyQueue()                => None
+  def dequeue(): (Option[A], Queue[A]) = self match {
+    case EmptyQueue()          => (None, self)
+    case Queue.Singleton(a)    => (Some(a), EmptyQueue())
+    case ConsQueue(tail, last) => (Some(last), tail)
   }
 
-  // Definition of middleElements is set of elements, as far as there is a lastElement after removing middleElements and head.
-  // 1, 2, 3 ==> Middle is 2, and lastElement is 3
-  // 1, 2, None => Middle is 1 (this is invalid, you can replace this case with throwing an exception)
-  // 1, Empty, None => No middle element (because there is only 1 element and that should be lastElement)
-  // 1, Empty, 3 ==> Middle element is actually 1 (and lastElement is 3)
-  def middleElements: Queue[A] = self match {
-    case a @ ConsQueue(head, m, last) =>
-      (m, last) match {
-        case (EmptyQueue(), None)              => EmptyQueue()
-        case (s @ ConsQueue(_, _, _), None)    => s
-        case (EmptyQueue(), Some(a))           => ConsQueue(head, EmptyQueue(), None)
-        case (s @ ConsQueue(_, _, _), Some(a)) => s
+  def enqueue(list: List[A]): Queue[A] =
+    list.foldRight(self)((a, b) => b.enqueue(a))
+
+  def enqueue(elem: A): Queue[A] = self match {
+    case c @ EmptyQueue() =>
+      ConsQueue(EmptyQueue(), elem)
+
+    case c @ Queue.Singleton(v) =>
+      ConsQueue(Queue.Singleton(elem), c.a)
+
+    case c @ ConsQueue(EmptyQueue(), last) =>
+      ConsQueue(Queue.Singleton(elem), last)
+
+    case c @ ConsQueue(queue, last) =>
+      val (l: Option[A], newQueue: Queue[A]) = queue.dequeue()
+
+      l match {
+        case Some(value) => ConsQueue(ConsQueue(newQueue.enqueue(elem), value), last)
+        case None        => ConsQueue(newQueue.enqueue(elem), last)
       }
-    case EmptyQueue()                 => EmptyQueue()
   }
-
-  def isEmpty: Boolean = self match {
-    case EmptyQueue()                => true
-    case ConsQueue(head, tail, last) => false
-  }
-
-  def dequeue(): Queue[A] = self match {
-    case EmptyQueue()                    => self
-    case c @ ConsQueue(h1, middle, last) =>
-      // if cons and last is empty, it implies 1 element which is head, and we remove it!
-      if (middle.isEmpty && last.isEmpty) {
-        EmptyQueue()
-      } else {
-        // Else we remove the last, and shift the last of middle (cons.lastElement) to last.
-        // and keep the rest of the elements in the middle (cons.middleElements) in the middle
-        ConsQueue(h1, middle.middleElements, middle.lastElement)
-      }
-
-  }
-
-  def enqueue(elem: A) = self match {
-    // Push 1 element to zero element queue.
-    // Middle is Empty. Last is empty. Head exists.
-    case c @ EmptyQueue()                  =>
-      ConsQueue(elem, EmptyQueue(), None)
-
-    // Push 1 element to 1 element queue.
-    // Middle is still empty. Head and Last exists.
-    case c @ ConsQueue(head, middle, None) =>
-      ConsQueue(elem, EmptyQueue(), Some(head))
-
-    // Push 1 element to mulitple elements queue.
-    case c @ ConsQueue(head, cons, last)   =>
-      ConsQueue(elem, ConsQueue(head, cons.middleElements, cons.lastElement), last)
-  }
-
 }
 
 object Queue {
   def init[A] = EmptyQueue[A]()
-  final case class EmptyQueue[A]()                                        extends Queue[A]
-  final case class ConsQueue[A](head: A, tail: Queue[A], last: Option[A]) extends Queue[A]
+  final case class EmptyQueue[A]()                       extends Queue[A]
+  final case class Singleton[A](a: A)                    extends Queue[A]
+  final case class ConsQueue[A](tail: Queue[A], last: A) extends Queue[A]
 }
 
 object QueueExample extends App {
@@ -96,10 +49,21 @@ object QueueExample extends App {
   val nextQueue2             = nextQueue.enqueue(2)
   val nextQueue3: Queue[Int] = nextQueue2.enqueue(3)
   val nextQueue4: Queue[Int] = nextQueue3.enqueue(4)
+  val nextQueue5: Queue[Int] = nextQueue4.enqueue(5)
+  val nextQueue6: Queue[Int] = nextQueue5.enqueue(6)
 
-  assert(nextQueue4 == ConsQueue(4, ConsQueue(3, EmptyQueue(), Some(2)), Some(1)))
-  assert(nextQueue4.dequeue() == ConsQueue(4, ConsQueue(3, EmptyQueue(), None), Some(2)))
-  assert(nextQueue4.dequeue().dequeue() == ConsQueue(4, EmptyQueue(), Some(3)))
-  assert(nextQueue4.dequeue().dequeue().dequeue() == ConsQueue(4, EmptyQueue(), None))
-  assert(nextQueue4.dequeue().dequeue().dequeue().dequeue == EmptyQueue())
+  import Queue._
+
+  val (l0, n0) = nextQueue6.dequeue()
+  assert(l0 == Some(1))
+  assert(n0 == ConsQueue(ConsQueue(ConsQueue(ConsQueue(Singleton(6), 5), 4), 3), 2))
+  val (l1, n1) = n0.dequeue()
+  assert(l1 == Some(2))
+  val (l2, n2) = n1.dequeue()
+  assert(l2 == Some(3))
+  val (l3, n3) = n2.dequeue()
+  assert(l3 == Some(4))
+  val (l4, n4) = n3.dequeue()
+  assert(l4 == Some(5))
+  assert(n4 == Singleton(6))
 }
