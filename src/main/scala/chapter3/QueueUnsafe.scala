@@ -3,8 +3,17 @@ import chapter3.QueueUnsafe.EmptyQueue
 import chapter3.QueueUnsafe.ConsQueue
 
 /**
- * A stack unsafe queue, however constant in time
+ * This is a stack unsafe immutable queue, with constant in time
  * enqueue and dequeue.
+ *
+ * There are numerous
+ * safe implementations of immutable queue (Ex: Refer Scala),
+ * however, we are taking a different approach here.
+ *
+ * The restructuring during enqueue is done
+ * through recursive dequeue and enqueue, however
+ * it is stack unsafe. The whole purpose is fun and learning.
+ * Compare the implementation with mutable queue in `chapter3.queue.Queue`.
  */
 sealed trait QueueUnsafe[A] { self =>
   def dequeue(): (Option[A], QueueUnsafe[A]) = self match {
