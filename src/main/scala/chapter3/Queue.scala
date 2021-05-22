@@ -30,7 +30,7 @@ package queue {
     var last: Option[Node[A]] = None
 
     /**
-     * Any queue can be converted co-recursed or unfolded
+     * Any queue can be co-recursed/unfolded
      * to form a lazy stream in Scala.
      * The whole idea can be used for a variety of situations in programming.
      * Example: backpressure implementation
