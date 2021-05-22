@@ -78,6 +78,8 @@ package queue {
       self
     }
 
+    // Dequeue, implies, returning existing last's data,
+    // and assigning last to it's previous node.
     def dequeue() = {
       var temp = last
       last match {
