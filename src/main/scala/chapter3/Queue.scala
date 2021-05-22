@@ -6,19 +6,22 @@ import chapter3.queue.Queue
  * Mutable implementation of queue.
  * This is sort of a doubly linked list
  * where each node knows the node next and
- * the node previous
+ * the node previous.
+ *
+ * The nullability is encoded using Option,
+ * making the implementation relatively safer.
  */
 package queue {
   abstract sealed class Node[A] {
     var next: Option[Node[A]]     = None
     var previous: Option[Node[A]] = None
-    var data: A
+    val data: A
   }
 
   object Node {
     def apply[A](d: A) =
       new Node[A] {
-        var data: A = d
+        val data: A = d
       }
   }
 
