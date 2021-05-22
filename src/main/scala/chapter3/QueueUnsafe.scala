@@ -28,10 +28,11 @@ sealed trait QueueUnsafe[A] { self =>
 
     case c @ ConsQueue(queue, last) =>
       val (l: Option[A], newQueue: QueueUnsafe[A]) = queue.dequeue()
+      val enqueued                                 = newQueue.enqueue(elem)
 
       l match {
-        case Some(value) => ConsQueue(ConsQueue(newQueue.enqueue(elem), value), last)
-        case None        => ConsQueue(newQueue.enqueue(elem), last)
+        case Some(value) => ConsQueue(ConsQueue(enqueued, value), last)
+        case None        => ConsQueue(enqueued, last)
       }
   }
 }
@@ -66,4 +67,6 @@ object QueueExample extends App {
   val (l4, n4) = n3.dequeue()
   assert(l4 == Some(5))
   assert(n4 == Singleton(6))
+
+  val hugeQueue = queue.enqueue(List.fill(10)(1))
 }
