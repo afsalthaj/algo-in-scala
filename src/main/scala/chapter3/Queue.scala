@@ -119,5 +119,5 @@ object QueueApp extends App {
   assert(queue.dequeue() == Some(4))
   assert(queue.dequeue() == Some(5))
   assert(Queue.fromList(List(1, 2, 3)).dequeue() == Some(3))
-  assert(Queue.fromList((0 to 100).toList).toStream.take(5).toList == List(100, 99, 98, 97, 96))
+  assert(Queue.fromList((0 to 10000).toList).toStream.take(5).toList == List(10000, 9999, 9998, 9997, 9996))
 }
