@@ -9,7 +9,6 @@ object BinaryTree {
   //[1] is the root node with children left and right occupied, with vlue 2 and 3 respectively
   // with no further children. The above example is a perfect binary tree
   final case class Node[A](left: Option[Node[A]], right: Option[Node[A]], value: A)
-
 }
 
 object CompleteBinaryTree {
