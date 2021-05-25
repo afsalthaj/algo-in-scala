@@ -10,3 +10,9 @@ object BinaryTree {
   // with no further children. The above example is a perfect binary tree
   final case class Node[A](left: Option[Node[A]], right: Option[Node[A]], value: A)
 }
+
+object CompleteBinaryTree {
+  // A complete binary tree is when either every node has either zero or two children
+  // zero is Option.empty[A] and two is ((Node[A], Node[A]))
+  final case class CompleteBinaryTree[A](value: A, branch: Option[(CompleteBinaryTree[A], CompleteBinaryTree[A])])
+}
