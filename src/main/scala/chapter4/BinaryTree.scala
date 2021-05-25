@@ -22,7 +22,8 @@ object Traversals {
   // Pretraversal. visit current >> Node left >> Node right
   // In traversal. Node left >> visit current >> Node right
   // Post traversal. Node left >> Node right >> visit current
-
+  // This is just a compilable pseudo-code. Don't use it anywhere. A => Unit
+  // is a bad practice.
   def inTraversal[A, B](tree: Option[BinaryTree.Node[A]], f: A => Unit): Unit =
     tree match {
       case Some(value) =>
