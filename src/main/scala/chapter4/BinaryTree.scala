@@ -12,12 +12,6 @@ object BinaryTree {
 
 }
 
-// Atmost 2 nodes, with the right most end might be missing.
-// In other words, if there is a node missing in the tree, its the right most.
-// Left exists, right absent
-// Left and right absent
-// Left and right exist
-
 object CompleteBinaryTree {
   // A complete binary tree is when either every node has either zero or two children
   // zero is Option.empty[A] and two is ((Node[A], Node[A]))
