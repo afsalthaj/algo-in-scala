@@ -83,7 +83,11 @@ object TreeProblems extends App {
 
         val newRight0 = middle + 1
         val newRight1 = end
-        BinaryTree.Node(Some(minimalTree(array, newLeft0, newLeft1)), Some(minimalTree(array, newRight0, newRight1)), middle)
+        BinaryTree.Node(
+          Some(minimalTree(array, newLeft0, newLeft1)),
+          Some(minimalTree(array, newRight0, newRight1)),
+          middle
+        )
       }
     }
 
@@ -151,7 +155,8 @@ object TreeProblems extends App {
    */
   type UnbalancedFlag = Int // If 0, no action, if 1 keep adding
   def checkIfBinaryTreeIsBalanced[A](root: BinaryTree.Node[A]): Boolean = {
-    val queue: chapter3.queue.Queue[(BinaryTree.Node[A], UnbalancedFlag)] = chapter3.queue.Queue.empty[(BinaryTree.Node[A], UnbalancedFlag)]
+    val queue: chapter3.queue.Queue[(BinaryTree.Node[A], UnbalancedFlag)] =
+      chapter3.queue.Queue.empty[(BinaryTree.Node[A], UnbalancedFlag)]
     if (root.left.isDefined && root.right.isDefined || root.left.isEmpty && root.right.isEmpty) {
       queue.enqueue((root, 0))
     } else {
@@ -209,5 +214,80 @@ object TreeProblems extends App {
 
     !unbalanced
   }
+
+  /**
+   * 4.5 Implement a function to check if a binary tree is a binary search tree
+   */
+  def validateBST(tree: BinaryTree.Node[Int]) = {
+    val queue = chapter3.queue.Queue.empty[(BinaryTree.Node[Int], Position)]
+
+    queue.enqueue((tree, Root))
+
+    var isBST = true
+
+    while (queue.nonEmpty && isBST) {
+      val node = queue.dequeue()
+
+      node match {
+        case Some(v) =>
+          val (node, pos) = v
+          (node.left, node.right) match {
+            case (Some(left), Some(right)) =>
+              val minReq =
+                (left.value < node.value) && (right.value) > node.value
+
+              isBST = pos match {
+                case Root              => minReq
+                case RightNode(parent) =>
+                  minReq && left.value < parent
+                case LeftNode(parent)  =>
+                  (minReq && right.value < parent)
+              }
+
+              queue.enqueue((left, LeftNode(node.value)))
+              queue.enqueue((right, RightNode(node.value)))
+
+            case (Some(left), None) =>
+              val minReq =
+                (left.value < node.value)
+
+              isBST = pos match {
+                case Root              => minReq
+                case RightNode(parent) =>
+                  minReq && left.value < parent
+                case LeftNode(_)       => minReq
+              }
+
+              queue.enqueue((left, LeftNode(node.value)))
+
+            case (None, Some(right)) =>
+              val minReq =
+                (right.value > node.value)
+
+              isBST = pos match {
+                case Root             => minReq
+                case RightNode(_)     => minReq
+                case LeftNode(parent) =>
+                  (minReq && right.value < parent)
+              }
+
+              queue.enqueue((right, RightNode(node.value)))
+
+            case (None, None) => ()
+          }
+
+        case None => ()
+      }
+    }
+
+    isBST
+
+  }
+
+  // Specific to above problem
+  sealed trait Position
+  case object Root                  extends Position
+  case class RightNode(parent: Int) extends Position
+  case class LeftNode(parent: Int)  extends Position
 
 }
