@@ -112,9 +112,10 @@ object Graph {
   }
 }
 
-object Problems {
+object GraphProblems {
 
   /**
+   * 4.1
    * Given a directed graph, find if there is a route between two nodes
    * Many algorithms in internet doesn't consider the data type as above.
    * So may be lets find a1 from the graph. If a1 is an in 1 Graph.Node[A]
@@ -122,12 +123,14 @@ object Problems {
    * to form a connection.
    *
    * First step. Find the node in the array `nodes`, where a1 exists.
+   * Then do either a DFS or BFS on that node. BFS is better IMO, as it has the tendency
+   * to pick the node that match faster without going deeper.
    */
   def routeExistsDFS[A](a1: A, a2: A, graph: Graph[A]): Boolean = {
-    val nodeofA1 = graph.existsDFS(a1)
+    val nodeofA1 = graph.existsBFS(a1)
 
     nodeofA1 match {
-      case Some(node) => node.existsDFS(a2).isDefined
+      case Some(node) => node.existsBFS(a2).isDefined
       case None       => false
     }
   }
