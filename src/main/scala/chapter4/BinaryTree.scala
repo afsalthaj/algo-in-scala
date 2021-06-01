@@ -255,7 +255,6 @@ object TreeProblems extends App {
           queue.enqueue((right, RightNode(node.value)))
 
         case (Some(left), None) =>
-          println("no")
           val minReq =
             (left.value < node.value)
 
@@ -269,8 +268,6 @@ object TreeProblems extends App {
           queue.enqueue((left, LeftNode(node.value)))
 
         case (None, Some(right)) =>
-          println("n2o")
-
           val minReq =
             (right.value > node.value)
 
@@ -284,7 +281,6 @@ object TreeProblems extends App {
           queue.enqueue((right, RightNode(node.value)))
 
         case (None, None) =>
-          println("ha")
           ()
       }
 
