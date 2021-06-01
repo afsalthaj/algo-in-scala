@@ -61,7 +61,7 @@ package queue {
         last match {
           case Some(value) =>
             value.previous = head
-          case None =>
+          case None        =>
             ()
         }
       }
@@ -85,14 +85,14 @@ package queue {
       last match {
         case Some(value) =>
           last = value.previous
-        case None => ()
+        case None        => ()
       }
 
       temp.map(_.data)
     }
 
-    def isEmpty  = peek().isDefined
-    def nonEmpty = !isEmpty
+    def nonEmpty = peek().isDefined
+    def isEmpty  = !nonEmpty
   }
 
   object Queue {

@@ -102,12 +102,12 @@ object TreeProblems extends App {
    * FIXME: Slightly complicated. Clean up
    */
   def listOfDepths[A](root: BinaryTree.Node[A]): List[List[A]] = {
-    val queue: chapter3.queue.Queue[BinaryTree.Node[A]] = chapter3.queue.Queue.empty[BinaryTree.Node[A]]
+    val queue                    = scala.collection.mutable.Queue.empty[BinaryTree.Node[A]]
     queue.enqueue(root)
-    var nodesOnEachLevel                                = 0
-    var nodesOnEachLevelTmp                             = 1
-    var totalList: List[List[A]]                        = Nil
-    var listOnEachLevel: List[A]                        = Nil
+    var nodesOnEachLevel         = 0
+    var nodesOnEachLevelTmp      = 1
+    var totalList: List[List[A]] = Nil
+    var listOnEachLevel: List[A] = Nil
 
     while (queue.nonEmpty) {
       nodesOnEachLevel = nodesOnEachLevelTmp
@@ -116,25 +116,20 @@ object TreeProblems extends App {
       while (nodesOnEachLevel > 0) {
         val node = queue.dequeue()
 
-        node match {
-          case Some(node) =>
-            listOnEachLevel = node.value :: listOnEachLevel
+        listOnEachLevel = node.value :: listOnEachLevel
 
-            node.left match {
-              case Some(value) =>
-                queue.enqueue(value)
-                nodesOnEachLevelTmp = nodesOnEachLevelTmp + 1
-              case None        => ()
-            }
+        node.left match {
+          case Some(value) =>
+            queue.enqueue(value)
+            nodesOnEachLevelTmp = nodesOnEachLevelTmp + 1
+          case None        => ()
+        }
 
-            node.right match {
-              case Some(value) =>
-                queue.enqueue(value)
-                nodesOnEachLevelTmp = nodesOnEachLevelTmp + 1
-              case None        => ()
-            }
-
-          case None => ()
+        node.right match {
+          case Some(value) =>
+            queue.enqueue(value)
+            nodesOnEachLevelTmp = nodesOnEachLevelTmp + 1
+          case None        => ()
         }
 
         nodesOnEachLevel = nodesOnEachLevel - 1
@@ -217,67 +212,82 @@ object TreeProblems extends App {
 
   /**
    * 4.5 Implement a function to check if a binary tree is a binary search tree
+   *
+   * Test with:
+   * import BinaryTree.Node
+   * val left  = Node(Some(Node(None, None, 3)), Some(Node(None, None, 5)), 4)
+   * val right = Node(Some(Node(None, None, 7)), Some(Node(None, None, 9)), 8)
+   *
+   * val tree = Node(Some(left), Some(right), 6)
+   *
+   * println(TreeProblems.validateBST(tree))
+   *
+   * The logic has Position propogated to make sure that the following is not a BST
+   *
+   *  val left  = Node(Some(Node(None, None, 3)), Some(Node(None, None, 8)), 4)
+   *  val right = Node(Some(Node(None, None, 7)), Some(Node(None, None, 9)), 8)
+   *  Node(Some(left), Some(right), 6)
    */
   def validateBST(tree: BinaryTree.Node[Int]) = {
-    val queue = chapter3.queue.Queue.empty[(BinaryTree.Node[Int], Position)]
+    val queue = scala.collection.mutable.Queue.empty[(BinaryTree.Node[Int], Position)]
 
     queue.enqueue((tree, Root))
 
     var isBST = true
 
     while (queue.nonEmpty && isBST) {
-      val node = queue.dequeue()
+      val nodeV       = queue.dequeue()
+      val (node, pos) = nodeV
+      (node.left, node.right) match {
+        case (Some(left), Some(right)) =>
+          val minReq =
+            (left.value < node.value) && (right.value) > node.value
 
-      node match {
-        case Some(v) =>
-          val (node, pos) = v
-          (node.left, node.right) match {
-            case (Some(left), Some(right)) =>
-              val minReq =
-                (left.value < node.value) && (right.value) > node.value
-
-              isBST = pos match {
-                case Root              => minReq
-                case RightNode(parent) =>
-                  minReq && left.value < parent
-                case LeftNode(parent)  =>
-                  (minReq && right.value < parent)
-              }
-
-              queue.enqueue((left, LeftNode(node.value)))
-              queue.enqueue((right, RightNode(node.value)))
-
-            case (Some(left), None) =>
-              val minReq =
-                (left.value < node.value)
-
-              isBST = pos match {
-                case Root              => minReq
-                case RightNode(parent) =>
-                  minReq && left.value < parent
-                case LeftNode(_)       => minReq
-              }
-
-              queue.enqueue((left, LeftNode(node.value)))
-
-            case (None, Some(right)) =>
-              val minReq =
-                (right.value > node.value)
-
-              isBST = pos match {
-                case Root             => minReq
-                case RightNode(_)     => minReq
-                case LeftNode(parent) =>
-                  (minReq && right.value < parent)
-              }
-
-              queue.enqueue((right, RightNode(node.value)))
-
-            case (None, None) => ()
+          isBST = pos match {
+            case Root              => minReq
+            case RightNode(parent) =>
+              minReq && left.value > parent
+            case LeftNode(parent)  =>
+              (minReq && right.value < parent)
           }
 
-        case None => ()
+          queue.enqueue((left, LeftNode(node.value)))
+          queue.enqueue((right, RightNode(node.value)))
+
+        case (Some(left), None) =>
+          println("no")
+          val minReq =
+            (left.value < node.value)
+
+          isBST = pos match {
+            case Root              => minReq
+            case RightNode(parent) =>
+              minReq && left.value < parent
+            case LeftNode(_)       => minReq
+          }
+
+          queue.enqueue((left, LeftNode(node.value)))
+
+        case (None, Some(right)) =>
+          println("n2o")
+
+          val minReq =
+            (right.value > node.value)
+
+          isBST = pos match {
+            case Root             => minReq
+            case RightNode(_)     => minReq
+            case LeftNode(parent) =>
+              (minReq && right.value < parent)
+          }
+
+          queue.enqueue((right, RightNode(node.value)))
+
+        case (None, None) =>
+          println("ha")
+          ()
       }
+
     }
 
     isBST
