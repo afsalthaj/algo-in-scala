@@ -42,5 +42,19 @@ object BitManipulation {
    * 10110101  : -75
    * 11011010  : -38
    */
-  def shifts() = ???
+  /**
+   * Result wil be either 0 or 1
+   */
+  def getBit(n: Int, index: Int): Int = {
+    val x = (1 << index) & n
+    if (x == 0) 0 else 1
+  }
+
+  /**
+   * Result will be any number that
+   * is an outcome of setting the ith bit
+   * of n
+   */
+  def setBit(n: Int, index: Int): Int =
+    (1 << index) & n
 }
