@@ -4,7 +4,7 @@ object BitManipulation {
 
   /**
    * 2's complement
-   * The binary representation of-K (negative K) as a N-bit number is c one at ( 1, 2N -1 - K).
+   * The binary representation of-K (negative K) as a N-bit number is conecat ( 1, 2N -1 - K).
    *
    * 3: 011
    * BitManipulation.twosComplement(3, 4)
