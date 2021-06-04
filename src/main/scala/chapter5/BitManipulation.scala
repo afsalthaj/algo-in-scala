@@ -21,4 +21,26 @@ object BitManipulation {
    */
   def twosComplement(n: Int, numberOfBits: Int): String =
     "1" + (Math.pow(2, numberOfBits - 1) - n).toInt.toBinaryString
+
+  /**
+   * In a logical right shift, we shift the bits and put a 0 in the most significant bit.
+   * It is indicated with a >>> operator.
+   *
+   * Example, in scala
+   *
+   * @ 4 >> 1 [ implies, 100 >> 1, ==> 010 ]
+   * res3: Int = 2
+   *
+   * 10110101  : -75
+   * 01011010  : 90
+   *
+   * Arithmetic shifts on the other hand divides the number by 2.
+   * In an arithmetic right shift,
+   * we shift values to the right but fill in the new bits with the value of the sign bit.
+   *
+   * Thus:
+   * 10110101  : -75
+   * 11011010  : -38
+   */
+  def shifts() = ???
 }
