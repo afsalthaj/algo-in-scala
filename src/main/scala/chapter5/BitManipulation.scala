@@ -4,7 +4,7 @@ object BitManipulation {
 
   /**
    * 2's complement
-   * The binary representation of-K (negative K) as a N-bit number is concat ( 1, 2N -1 - K).
+   * The binary representation of-K (negative K) as a N-bit number is concat ( 1, Math.pow(2, N -1) - K).
    *
    * 3: 011
    * BitManipulation.twosComplement(3, 4)
@@ -23,6 +23,7 @@ object BitManipulation {
     "1" + (Math.pow(2, numberOfBits - 1) - n).toInt.toBinaryString
 
   /**
+   * A quick overview of logic and arithmetic right shift.
    * In a logical right shift, we shift the bits and put a 0 in the most significant bit.
    * It is indicated with a >>> operator.
    *
