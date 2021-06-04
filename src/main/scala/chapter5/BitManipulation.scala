@@ -55,6 +55,54 @@ object BitManipulation {
    * is an outcome of setting the ith bit
    * of n
    */
-  def setBit(n: Int, index: Int): Int =
-    (1 << index) & n
+  def setBit(n: Int, i: Int): Int =
+    (1 << i) | n
+
+  /**
+   * This method operates in almost the reverse of setBit.
+   * First, we create a number like 11101111 by creating
+   * the reverse of it (00010000) and negating it.
+   * Then, we perform an AND with num.
+   * This will clear the ith bit and leave the remainder unchanged.
+   */
+  def clearBit(n: Int, i: Int): Int =
+    n & ~(1 << i)
+
+  /**
+   * To clear all bits from the most significant bit through i (inclusive),
+   * we create a mask with a 1 at the ith bit (1 << i).
+   * Then,we subtract 1 from it, giving us a sequence of 0s followed by i 1s.
+   * We then AND our number with this mask to leave just the last i bits.
+   */
+  def clearBitsMSBthroughI(n: Int, i: Int): Int =
+    n & ((1 << i) - 1)
+
+  /**
+   * To clear all bits from i through 0 (inclusive),
+   * we take a sequence of all ls (which is -1)
+   * and shift it left by i + 1bits.
+   * This gives us a sequence of 1s
+   * (in the most significant bits) followed by i 0 bits.
+   */
+  def clearBitsMSBthrough0(n: Int, i: Int): Int =
+    n & (-1 << (i + 1))
+
+  /**
+   * Update Bit
+   * To set the ith bit to a value v,
+   * we first clear the bit at position
+   * i by using a mask that looks like 11101111.
+   * Then, we shift the intended value, v , left by i bits.
+   * This will create a number with bit i equal
+   * to v and all other bits equal to 0.
+   * Finally, we OR these two numbers,
+   * updating the ith bit if v is 1 and leaving it as 0 otherwise.
+   */
+  def updateBit(n: Int, i: Int, bitIs1: Boolean) = {
+    val value   = if (bitIs1) 1 else 0
+    val mask    = ~(1 << i) //11110111
+    val cleared = (n & mask)
+    (cleared | (value << i))
+  }
+
 }
