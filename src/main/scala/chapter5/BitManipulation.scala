@@ -23,7 +23,8 @@ object BitManipulation {
     "1" + (Math.pow(2, numberOfBits - 1) - n).toInt.toBinaryString
 
   /**
-   * A quick overview of logic and arithmetic right shift.
+   * A quick overview of logic and arithmetic right shift:
+   * -------------------------------------------------------
    * In a logical right shift, we shift the bits and put a 0 in the most significant bit.
    * It is indicated with a >>> operator.
    *
