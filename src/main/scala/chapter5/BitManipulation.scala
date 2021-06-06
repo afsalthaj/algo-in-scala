@@ -107,4 +107,90 @@ object BitManipulation {
     (cleared | (value << i))
   }
 
+  /**
+   * Insertion: You are given two 32-bit numbers, N and M, and two bit positions, i and j.
+   * Write a method to insert M into N such that M starts at bit j and ends at bit i. You can assume that the bits j through i have enough space to fit all of M. That is, if M = 10011, you can assume that there are at least 5 bits between j and i. You would not, for example, have j = 3 and i = 2, because M could not fully fit between bit 3 and bit 2.
+   * EXAMPLE
+   * Input: N 10000000000, M 10011, i 2, j 6 Output:N = 10001001100
+   *
+   * @ Integer.parseInt("10000000000",2)
+   * res2: Int = 1024
+   *
+   * @ Integer.parseInt("10011",2)
+   * res3: Int = 19
+   *
+   * // Expected
+   * @ Integer.parseInt("10001001100",2)
+   * res4: Int = 1100
+   *
+   * // Real
+   * @ insertion(1024, 19, 2, 6)
+   * res7: Int = 1100
+   */
+  def insertion(n: Int, m: Int, i: Int, j: Int) = {
+    val mask    = (-1 << i) + (1 << (j + 1))
+    val negated = ~mask
+    (negated & n) | m << i
+  }
+
+  /**
+   * Binary to String: Given a real number between O and 1 (e.g., 0.72)
+   * that is passed in as a double, print the binary representation.
+   * If the number cannot be represented accurately in binary with at most 32 characters, print "ERROR:'
+   *
+   * Hint from text book:
+   *
+   * .56 = 5 * 1/10^1 + 6 * 1/ 10^2
+   *
+   * .101 = 1 * 1/2^1 + 0 * 1/2^2 + 1 * 1/2^3
+   *
+   * This implies
+   * if 2 * .101(base 2) > 1(base 10), then the first element (in binary) is a 1.
+   *
+   * If so, append the builder by 1.
+   *
+   * Mostly, this is a formal technique that you just need to grasp.
+   */
+  def binaryToString(n: Double) = {
+    val builder = new StringBuilder
+    builder.append('.')
+
+    def go(n: Double): String =
+      if (n > 0) {
+        val doubled = n * 2 // implies the first number is binary 1
+        if (doubled > 1) {
+          builder.append(1)
+          go(doubled - 1)
+        } else {
+          builder.append(0)
+          go(doubled)
+        }
+      } else {
+        builder.toString()
+      }
+
+    go(n)
+  }
+
+  /**
+   * Flip Bit to Win: You have an integer and you can flip exactly one bit from a O to a 1. Write code to find the length of the longest sequence of 1 s you could create.
+   * EXAMPLE
+   * Input: 1775 (or: 11011101111) Output: 8
+   *
+   * 4 -> 4
+   *
+   * 5
+   * 6
+   * 7 111
+   *
+   * 8 - 3 = 5
+   *
+   * 11011101111
+   */
+
+  type IndexToSet            = Int
+  type Total1sBeforeAndAfter = Int
+  type ShouldCountOrNot      = Boolean
+
+  def flipBit(binaryString: String) = ???
 }
